@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🏦 Theo Dõi Khuyến Mãi Thẻ Ngân Hàng</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      font-size: 16px;
+      opacity: 0.9;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      text-align: center;
+      border-top: 4px solid #667eea;
+      transition: transform 0.3s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .stat-card.banks { border-top-color: #f093fb; }
+    .stat-card.mcc { border-top-color: #4facfe; }
+    .stat-card.bins { border-top-color: #43e97b; }
+
+    .stat-number {
+      font-size: 36px;
+      font-weight: bold;
+      color: #667eea;
+      margin-bottom: 8px;
+    }
+
+    .stat-card.banks .stat-number { color: #f093fb; }
+    .stat-card.mcc .stat-number { color: #4facfe; }
+    .stat-card.bins .stat-number { color: #43e97b; }
+
+    .stat-label {
+      font-size: 14px;
+      color: #666;
+      font-weight: 500;
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 250px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+
+    .search-box input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-secondary {
+      background: white;
+      color: #667eea;
+      border: 2px solid #667eea;
+    }
+
+    .btn-secondary:hover {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-danger {
+      background: #ff6b6b;
+      color: white;
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+
+    .btn-danger:hover {
+      background: #ee5a52;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      animation: fadeIn 0.3s;
+    }
+
+    .modal.show {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-content {
+      background-color: white;
+      padding: 30px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      animation: slideIn 0.3s;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateY(-50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal-header {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #999;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #333;
+      font-size: 14px;
+    }
+
+    .required {
+      color: #ff6b6b;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      transition: all 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .form-row-full {
+      grid-column: 1 / -1;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #333;
+      margin-top: 20px;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #667eea;
+    }
+
+    .section-title:first-child {
+      margin-top: 0;
+    }
+
+    .mcc-examples {
+      background: #f0f4ff;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #666;
+      margin-top: 8px;
+      line-height: 1.6;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      margin-top: 30px;
+    }
+
+    .table-container {
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead {
+      background: #f8f9fa;
+      border-bottom: 2px solid #e0e0e0;
+    }
+
+    th {
+      padding: 15px;
+      text-align: left;
+      font-weight: 600;
+      color: #333;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 15px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    tr:hover {
+      background: #f8f9fa;
+    }
+
+    .bank-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .mcc-badge {
+      display: inline-block;
+      background: #e3f2fd;
+      color: #1976d2;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .status-active {
+      background: #c8e6c9;
+      color: #2e7d32;
+    }
+
+    .status-expired {
+      background: #ffcccc;
+      color: #c62828;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #999;
+    }
+
+    .empty-state-icon {
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+
+    .filter-section {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      display: none;
+    }
+
+    .filter-section.show {
+      display: block;
+    }
+
+    .filter-group {
+      margin-bottom: 15px;
+    }
+
+    .filter-group label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: #333;
+      font-size: 14px;
+    }
+
+    .filter-group input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 24px;
+      }
+
+      .controls {
+        flex-direction: column;
+      }
+
+      .search-box {
+        min-width: 100%;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .modal-content {
+        width: 95%;
+        padding: 20px;
+      }
+
+      table {
+        font-size: 12px;
+      }
+
+      th, td {
+        padding: 10px;
+      }
+    }
+
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 2000;
+      animation: slideInRight 0.3s;
+    }
+
+    .notification.success {
+      border-left: 4px solid #43e97b;
+    }
+
+    .notification.error {
+      border-left: 4px solid #ff6b6b;
+    }
+
+    @keyframes slideInRight {
+      from { transform: translateX(400px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🏦 Theo Dõi Khuyến Mãi Thẻ Ngân Hàng</h1>
+      <p>Quản lý chương trình khuyến mãi theo MCC và BIN</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number" id="totalPromos">0</div>
+        <div class="stat-label">Tổng Chương Trình</div>
+      </div>
+      <div class="stat-card banks">
+        <div class="stat-number" id="totalBanks">0</div>
+        <div class="stat-label">Số Ngân Hàng</div>
+      </div>
+      <div class="stat-card mcc">
+        <div class="stat-number" id="totalMCC">0</div>
+        <div class="stat-label">Danh Mục MCC</div>
+      </div>
+      <div class="stat-card bins">
+        <div class="stat-number" id="totalBINs">0</div>
+        <div class="stat-label">BIN Hoạt Động</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="search-box">
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="🔍 Tìm kiếm ngân hàng, chương trình, BIN hoặc MCC..."
+        >
+      </div>
+      <button class="btn btn-secondary" id="filterToggle">⚙️ Bộ Lọc</button>
+      <button class="btn btn-primary" id="addBtn">➕ Thêm Mới</button>
+      <button class="btn btn-secondary" id="exportBtn">📥 Tải Dữ Liệu</button>
+      <button class="btn btn-secondary" id="importBtn">📤 Nạp Dữ Liệu</button>
+    </div>
+
+    <div class="filter-section" id="filterSection">
+      <div class="form-row">
+        <div class="filter-group">
+          <label>Lọc theo BIN:</label>
+          <input type="text" id="filterBIN" placeholder="VD: 453069">
+        </div>
+        <div class="filter-group">
+          <label>Lọc theo MCC:</label>
+          <input type="text" id="filterMCC" placeholder="VD: 5411">
+        </div>
+        <div class="filter-group">
+          <label>Lọc theo Ngân Hàng:</label>
+          <input type="text" id="filterBank" placeholder="VD: Vietcombank">
+        </div>
+      </div>
+      <button class="btn btn-primary" id="clearFilters" style="margin-top: 15px;">Xóa Bộ Lọc</button>
+    </div>
+
+    <div class="table-container">
+      <table id="promoTable">
+        <thead>
+          <tr>
+            <th>Ngân Hàng</th>
+            <th>Chương Trình</th>
+            <th>BIN</th>
+            <th>MCC</th>
+            <th>Ưu Đãi</th>
+            <th>Giá Trị Min</th>
+            <th>Thời Gian</th>
+            <th>Trạng Thái</th>
+            <th>Hành Động</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal Thêm/Sửa -->
+  <div class="modal" id="addModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span id="modalTitle">Thêm Chương Trình Khuyến Mãi</span>
+        <button class="close-btn" onclick="closeModal()">&times;</button>
+      </div>
+      <form id="promoForm">
+        <div class="section-title">Thông Tin Ngân Hàng</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Tên Ngân Hàng <span class="required">*</span></label>
+            <select id="bank" required>
+              <option value="">-- Chọn Ngân Hàng --</option>
+              <option value="Vietcombank">Vietcombank</option>
+              <option value="Agribank">Agribank</option>
+              <option value="BIDV">BIDV</option>
+              <option value="MB Bank">MB Bank</option>
+              <option value="ACB">ACB</option>
+              <option value="Techcombank">Techcombank</option>
+              <option value="VPBank">VPBank</option>
+              <option value="SHB">SHB</option>
+              <option value="Eximbank">Eximbank</option>
+              <option value="Sacombank">Sacombank</option>
+              <option value="HDBank">HDBank</option>
+              <option value="TPBank">TPBank</option>
+              <option value="LPBank">LPBank</option>
+              <option value="SeABank">SeABank</option>
+              <option value="Oceanbank">Oceanbank</option>
+              <option value="Khác">Khác</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>BIN Thẻ (6 chữ số) <span class="required">*</span></label>
+            <input type="text" id="bin" placeholder="VD: 453069" pattern="\d{6}" maxlength="6" required>
+          </div>
+        </div>
+
+        <div class="section-title">Thông Tin Chương Trình</div>
+        <div class="form-group form-row-full">
+          <label>Tên Chương Trình <span class="required">*</span></label>
+          <input type="text" id="name" placeholder="VD: Hoàn tiền 10% siêu thị" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>MCC <span class="required">*</span></label>
+            <input type="text" id="mcc" placeholder="VD: 5411, 5412" required>
+            <div class="mcc-examples">
+              <strong>MCC phổ biến:</strong><br>
+              5411: Siêu thị | 5412: Nhà hàng<br>
+              4829: Xăng | 7995: Bán lẻ điện tử<br>
+              4111: Máy bay | 7011: Khách sạn
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Ưu Đãi <span class="required">*</span></label>
+            <input type="text" id="discount" placeholder="VD: 10% hoàn tiền" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Giá Trị Tối Thiểu</label>
+            <input type="text" id="minValue" placeholder="VD: 500.000 VND">
+          </div>
+        </div>
+
+        <div class="section-title">Thời Hạn</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Ngày Bắt Đầu <span class="required">*</span></label>
+            <input type="date" id="startDate" required>
+          </div>
+          <div class="form-group">
+            <label>Ngày Kết Thúc <span class="required">*</span></label>
+            <input type="date" id="endDate" required>
+          </div>
+        </div>
+
+        <div class="form-group form-row-full">
+          <label>Chi Tiết</label>
+          <textarea id="details" placeholder="Mô tả chi tiết về điều kiện, giới hạn..."></textarea>
+        </div>
+
+        <div class="modal-buttons">
+          <button type="button" class="btn btn-secondary" onclick="closeModal()">Hủy</button>
+          <button type="submit" class="btn btn-primary">Lưu</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <input type="file" id="importFile" accept=".json" style="display: none;">
+
+  <script>
+    const STORAGE_KEY = 'khuyenmaidata';
+    let allData = [];
+    let filteredData = [];
+    let editingId = null;
+
+    // Load dữ liệu
+    function loadData() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      allData = saved ? JSON.parse(saved) : [];
+      filteredData = allData;
+      updateStats();
+      renderTable();
+    }
+
+    // Lưu dữ liệu
+    function saveData() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(allData));
+      updateStats();
+    }
+
+    // Cập nhật thống kê
+    function updateStats() {
+      document.getElementById('totalPromos').textContent = allData.length;
+      const banks = new Set(allData.map(p => p.bank));
+      const mccs = new Set(allData.map(p => p.mcc));
+      const bins = new Set(allData.map(p => p.bin));
+      document.getElementById('totalBanks').textContent = banks.size;
+      document.getElementById('totalMCC').textContent = mccs.size;
+      document.getElementById('totalBINs').textContent = bins.size;
+    }
+
+    // Render bảng
+    function renderTable() {
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '';
+
+      if (filteredData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" class="empty-state"><div class="empty-state-icon">📭</div><p>Không có dữ liệu</p></td></tr>';
+        return;
+      }
+
+      filteredData.forEach(promo => {
+        const isExpired = new Date(promo.endDate) < new Date();
+        const statusClass = isExpired ? 'status-expired' : 'status-active';
+        const statusText = isExpired ? 'Hết Hạn' : 'Đang Chạy';
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td><span class="bank-badge">${promo.bank}</span></td>
+          <td>${promo.name}</td>
+          <td><code>${promo.bin}</code></td>
+          <td><span class="mcc-badge">${promo.mcc}</span></td>
+          <td><strong>${promo.discount}</strong></td>
+          <td>${promo.minValue || 'Không'}</td>
+          <td>${promo.startDate} → ${promo.endDate}</td>
+          <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+          <td>
+            <button class="btn btn-danger" onclick="editPromo('${promo.id}')">✏️</button>
+            <button class="btn btn-danger" onclick="deletePromo('${promo.id}')">🗑️</button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // Thêm/Sửa
+    document.getElementById('promoForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const promo = {
+        id: editingId || Date.now().toString(),
+        bank: document.getElementById('bank').value,
+        name: document.getElementById('name').value,
+        bin: document.getElementById('bin').value,
+        mcc: document.getElementById('mcc').value,
+        discount: document.getElementById('discount').value,
+        minValue: document.getElementById('minValue').value,
+        startDate: document.getElementById('startDate').value,
+        endDate: document.getElementById('endDate').value,
+        details: document.getElementById('details').value
+      };
+
+      if (new Date(promo.startDate) >= new Date(promo.endDate)) {
+        showNotification('Ngày kết thúc phải sau ngày bắt đầu!', 'error');
+        return;
+      }
+
+      if (editingId) {
+        const idx = allData.findIndex(p => p.id === editingId);
+        allData[idx] = promo;
+      } else {
+        allData.push(promo);
+      }
+
+      saveData();
+      closeModal();
+      applyFilters();
+      showNotification(editingId ? 'Cập nhật thành công!' : 'Thêm mới thành công!', 'success');
+    });
+
+    // Modal
+    function openAddModal() {
+      editingId = null;
+      document.getElementById('modalTitle').textContent = 'Thêm Chương Trình Khuyến Mãi';
+      document.getElementById('promoForm').reset();
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('startDate').value = today;
+      const nextMonth = new Date();
+      nextMonth.setMonth(nextMonth.getMonth() + 1);
+      document.getElementById('endDate').value = nextMonth.toISOString().split('T')[0];
+      document.getElementById('addModal').classList.add('show');
+    }
+
+    function editPromo(id) {
+      const promo = allData.find(p => p.id === id);
+      if (!promo) return;
+
+      editingId = id;
+      document.getElementById('modalTitle').textContent = 'Chỉnh Sửa Chương Trình';
+      document.getElementById('bank').value = promo.bank;
+      document.getElementById('bin').value = promo.bin;
+      document.getElementById('name').value = promo.name;
+      document.getElementById('mcc').value = promo.mcc;
+      document.getElementById('discount').value = promo.discount;
+      document.getElementById('minValue').value = promo.minValue;
+      document.getElementById('startDate').value = promo.startDate;
+      document.getElementById('endDate').value = promo.endDate;
+      document.getElementById('details').value = promo.details;
+      document.getElementById('addModal').classList.add('show');
+    }
+
+    function closeModal() {
+      document.getElementById('addModal').classList.remove('show');
+      editingId = null;
+    }
+
+    function deletePromo(id) {
+      if (confirm('Xóa chương trình này?')) {
+        allData = allData.filter(p => p.id !== id);
+        saveData();
+        applyFilters();
+        showNotification('Đã xóa!', 'success');
+      }
+    }
+
+    // Tìm kiếm & Lọc
+    document.getElementById('searchInput').addEventListener('input', applyFilters);
+    document.getElementById('filterToggle').addEventListener('click', function() {
+      document.getElementById('filterSection').classList.toggle('show');
+    });
+    document.getElementById('filterBIN').addEventListener('input', applyFilters);
+    document.getElementById('filterMCC').addEventListener('input', applyFilters);
+    document.getElementById('filterBank').addEventListener('input', applyFilters);
+
+    function applyFilters() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const bin = document.getElementById('filterBIN').value.toLowerCase();
+      const mcc = document.getElementById('filterMCC').value.toLowerCase();
+      const bank = document.getElementById('filterBank').value.toLowerCase();
+
+      filteredData = allData.filter(p => {
+        const matchSearch = !search ||
+          p.bank.toLowerCase().includes(search) ||
+          p.name.toLowerCase().includes(search) ||
+          p.bin.includes(search) ||
+          p.mcc.toLowerCase().includes(search);
+
+        const matchBIN = !bin || p.bin.toLowerCase().includes(bin);
+        const matchMCC = !mcc || p.mcc.toLowerCase().includes(mcc);
+        const matchBank = !bank || p.bank.toLowerCase().includes(bank);
+
+        return matchSearch && matchBIN && matchMCC && matchBank;
+      });
+
+      renderTable();
+    }
+
+    // Export/Import
+    document.getElementById('exportBtn').addEventListener('click', function() {
+      const json = JSON.stringify(allData, null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `khuyenmaidulieu_${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+      showNotification('Tải dữ liệu thành công!', 'success');
+    });
+
+    document.getElementById('importBtn').addEventListener('click', function() {
+      document.getElementById('importFile').click();
+    });
+
+    document.getElementById('importFile').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        try {
+          const data = JSON.parse(event.target.result);
+          if (Array.isArray(data)) {
+            allData = data;
+            saveData();
+            applyFilters();
+            showNotification('Nạp dữ liệu thành công!', 'success');
+          }
+        } catch (err) {
+          showNotification('File không hợp lệ!', 'error');
+        }
+      };
+      reader.readAsText(file);
+    });
+
+    // Notification
+    function showNotification(msg, type) {
+      const div = document.createElement('div');
+      div.className = `notification ${type}`;
+      div.textContent = msg;
+      document.body.appendChild(div);
+      setTimeout(() => div.remove(), 3000);
+    }
+
+    // Khởi động
+    document.getElementById('addBtn').addEventListener('click', openAddModal);
+    document.getElementById('clearFilters').addEventListener('click', function() {
+      document.getElementById('filterBIN').value = '';
+      document.getElementById('filterMCC').value = '';
+      document.getElementById('filterBank').value = '';
+      applyFilters();
+    });
+
+    // Đóng modal khi click ngoài
+    window.addEventListener('click', function(e) {
+      const modal = document.getElementById('addModal');
+      if (e.target === modal) {
+        closeModal();
+      }
+    });
+
+    loadData();
+  </script>
+</body>
+</html>
